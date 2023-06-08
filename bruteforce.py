@@ -1,40 +1,30 @@
-from typing import Any, List
-from model import Action, Combination
+from typing import Any, List, Tuple
+from model import Combination, Action
 import itertools
 
 
-def find_suitable_actions_combinations(source: Any, max_investment: int) -> List[Combination]:
-    suitable_actions = []
-    for i in range(1, len(source) + 1):
-        actions_combinations = itertools.combinations(source, i)
-        for action in actions_combinations:
+def find_suitable_actions_combinations(actions: List[Action], max_investment: int) -> List[Combination]:
+    suitable_combinations = []
+    for i in range(1, len(actions) + 1):
+        actions_combinations = itertools.combinations(actions, i)
+        for actions_combination in actions_combinations:
             total_cost = 0
-            i = 0
             profit = 0
-            while i < len(action):
-                price = action[i].price
+            for action in actions_combination:
+                price = action.price
                 total_cost = total_cost + price
-                profit = profit + action[i].profit
-                i += 1
-            if total_cost < max_investment:
-                suitable_actions.append(Combination(action, round(profit, 2)))
-    return suitable_actions
+                # if total_cost
+                profit = profit + action.profit
+            if total_cost <= max_investment:
+                suitable_combinations.append(Combination(actions_combination, round(profit, 2)))
+    return suitable_combinations
 
 
-def find_max_profit(suitable_actions: List[Combination]) -> float:
-    all_profits = []
-    for action in suitable_actions:
-        all_profits.append(action.total_profit)
-    max_profit = max(all_profits)
-    return max_profit
+def find_best_portfolio(actions: List[Action], max_investment: int) -> Combination:
+    suitable_combinations = find_suitable_actions_combinations(actions, max_investment)
+    suitable_combinations = sorted(suitable_combinations, key=lambda combination: combination.total_profit,
+                                   reverse=True)
 
-
-def display_best_combination(max_profit: float, suitable_actions: List[Combination]):
-    print(f'The max profit of the investment is {max_profit}')
-    for suitable_action in suitable_actions:
-        if suitable_action.total_profit == max_profit:
-            for action in suitable_action.combi:
-                print(action)
-
+    return suitable_combinations[0]   
 
 
