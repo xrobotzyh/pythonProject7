@@ -20,7 +20,7 @@ class Action:
             next(csv_reader)
             for row in csv_reader:
                 name = row[0]
-                price = int(float(row[1])*decimal)
+                price = int(abs(float(row[1])*decimal))
                 profit_percentage = row[2]
                 action = cls(name, int(price), float(profit_percentage))
                 actions.append(action)
