@@ -17,7 +17,8 @@ def find_best_portfolio_greedy_algorithm(actions: List[Action], max_investment: 
     return best_combination
 
 
-def find_best_portfolio_dynamic_programme(actions: List[Action], max_investment: int):
+def find_best_portfolio_dynamic_programme(actions: List[Action], max_investment: int, decimal: int):
+    max_investment = max_investment*decimal
     dp = [[0] * (max_investment + 1) for _ in range(0, len(actions))]
     best_profit = 0
     best_portfolio = []
@@ -33,10 +34,10 @@ def find_best_portfolio_dynamic_programme(actions: List[Action], max_investment:
             if actions[action_index].price > investment:
                 dp[action_index][investment] = dp[action_index - 1][investment]
             else:
-                prev_dp_element = dp[action_index-1][investment - actions[action_index].price]
+                prev_dp_element = dp[action_index - 1][investment - actions[action_index].price]
                 dp[action_index][investment] = max(dp[action_index - 1][investment], actions[action_index].profit + \
                                                    prev_dp_element)
-            best_profit = round(dp[action_index][investment], 2)
+            best_profit = round(dp[action_index][investment], 2)/decimal
 
     i = len(actions) - 1
     while i > 0 and max_investment > 0:
@@ -56,7 +57,7 @@ def find_best_portfolio_dynamic_programme_array(actions: List[Action], max_inves
     best_profit = 0
     best_portfolio = []
     # initializer the list use the first line
-    for investment in range(0, (max_investment+1)):
+    for investment in range(0, (max_investment + 1)):
         if actions[0].price <= investment:
             profit[investment] = actions[0].profit
     # for the following lines,use a dynamic array next_line_profit
@@ -80,4 +81,3 @@ def find_best_portfolio_dynamic_programme_array(actions: List[Action], max_inves
     # best_portfolio = best_portfolio[::-1]
     # best_combination = Combination(best_portfolio, best_profit)
     return best_profit
-
