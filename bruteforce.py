@@ -1,8 +1,6 @@
 import time
-from typing import Any, List, Tuple
-
+from typing import List
 import psutil
-
 import rapport
 from model import Combination, Stock
 import itertools
