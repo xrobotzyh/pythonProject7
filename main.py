@@ -1,28 +1,13 @@
-import time
-import psutil
-
 import bruteforce
 import optimized
-import rapport
-from model import Action
-from rapport import report,display_report_template
+from model import Stock
+
 
 if __name__ == '__main__':
-    start_time = time.time()
-    memory_before = psutil.virtual_memory().used
-    decimal = 1
-    actions = Action.from_data("actions.csv", decimal)
+    decimal = 100
     max_investment = 500
-    # best_combination = bruteforce.find_best_portfolio(actions, max_investment)
-    # best_combination = optimized.find_best_portfolio_greedy_algorithm(actions, max_investment*decimal)
-    best_combination = optimized.find_best_portfolio_dynamic_programme(actions, max_investment, decimal)
-    # best_combination = optimized.find_best_portfolio_dynamic_programme_array(actions, max_investment * decimal)
-
-    end_time = time.time()
-    memory_after = psutil.virtual_memory().used
-    used_time = end_time - start_time
-    memory_used = memory_after - memory_before
-    report_title, columns, report_data = rapport.report(best_combination,"action")
-    rapport.generate_report(report_title, columns, report_data,best_combination.total_profit,used_time,memory_used)
-    print(best_combination)
-    print(f'The time used of the Algorithm is {used_time} seconds ,and memory used is {memory_used / 1000 / 1024}MB')
+    filename = "dataset1.csv"
+    stocks = Stock.from_data(filename, decimal)
+    stocks_brute_force = Stock.from_data(filename, 1)
+    bruteforce.performance_brute_force(stocks_brute_force[:21], max_investment, filename)
+    optimized.performance_optimized(stocks[:21], max_investment, filename, decimal)
