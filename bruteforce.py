@@ -4,6 +4,7 @@ import psutil
 import rapport
 from model import Combination, Stock
 import itertools
+import matplotlib.pyplot as chart
 
 
 def find_suitable_stocks_combinations(stocks: List[Stock], max_investment: int) -> List[Combination]:
@@ -36,15 +37,44 @@ def find_best_portfolio(stocks: List[Stock], max_investment: int):
 
 def performance_brute_force(stocks, max_investment, filename):
     start_time = time.time()
-    memory_before = psutil.virtual_memory().used
     best_combination, total_investment, number_stocks = find_best_portfolio(stocks, max_investment)
     end_time = time.time()
-    memory_after = psutil.virtual_memory().used
     used_time = end_time - start_time
-    memory_used = (memory_after - memory_before) / 1000 / 1024
+    memory_used = psutil.Process()
+    memory_usage = memory_used.memory_info().rss / 1024 / 1024
     report_title, columns, report_data = rapport.report(best_combination, filename + "bf")
     rapport.generate_report(report_title, columns, report_data, best_combination.total_profit, used_time,
-                            memory_used,
+                            memory_usage,
                             total_investment, number_stocks)
     print(best_combination)
-    print(f'The time used of the Algorithm brut force is {used_time} seconds ,and memory used is {memory_used}MB \n')
+    print(f'The time used of the Algorithm brut force is {used_time} seconds ,and memory used is {memory_usage}MB \n')
+
+
+def performance_brute_force_chart(stocks, max_investment):
+    execution_times = []
+    num_stocks = []
+    memory_usages = []
+
+    for i in range(1, len(stocks) + 1):
+        stock = stocks[:i]
+        start_time = time.time()
+        find_best_portfolio(stock, max_investment)
+        end_time = time.time()
+        execution_time = end_time - start_time
+        execution_times.append(execution_time)
+        process = psutil.Process()
+        memory_usage = process.memory_info().rss / 1024 / 1024
+        memory_usages.append(memory_usage)
+        num_stocks.append(i)
+
+    chart.plot(num_stocks, execution_times)
+    chart.title('Brut Force Algorithm Performance')
+    chart.xlabel('Number of Stocks')
+    chart.ylabel('Execution Time')
+    chart.show()
+
+    chart.plot(num_stocks, memory_usages)
+    chart.title('Algorithm Performance')
+    chart.xlabel('Number of Stocks')
+    chart.ylabel('Memory Usage (MB)')
+    chart.show()

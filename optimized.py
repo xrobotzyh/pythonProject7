@@ -3,6 +3,7 @@ from typing import List
 import psutil
 import rapport
 from model import Combination, Stock
+import matplotlib.pyplot as chart
 
 
 def find_best_portfolio_greedy_algorithm(stocks: List[Stock], max_investment: int):
@@ -18,6 +19,8 @@ def find_best_portfolio_greedy_algorithm(stocks: List[Stock], max_investment: in
             profit = profit + stock.profit
             max_investment = max_investment - stock.price
     best_combination = Combination(best_portfolio, round(profit, 2))
+    print(profit)
+    print(best_combination)
     return best_combination
 
 
@@ -65,16 +68,45 @@ def find_best_portfolio_dynamic_programme(stocks: List[Stock], max_investment: i
 
 def performance_optimized(stocks, max_investment, filename, decimal):
     start_time = time.time()
-    memory_before = psutil.virtual_memory().used
     best_combination, total_investment, number_stocks = find_best_portfolio_dynamic_programme(stocks, max_investment,
                                                                                               decimal)
     end_time = time.time()
-    memory_after = psutil.virtual_memory().used
     used_time = end_time - start_time
-    memory_used = (memory_after - memory_before) / 1000 / 1024
+    memory_used = psutil.Process()
+    memory_usage = memory_used.memory_info().rss / 1024 / 1024
     report_title, columns, report_data = rapport.report(best_combination, filename + "opz")
     rapport.generate_report(report_title, columns, report_data, best_combination.total_profit, used_time,
-                            memory_used,
+                            memory_usage,
                             total_investment, number_stocks)
     print(best_combination)
-    print(f'The time used of the Algorithm optimized is {used_time} seconds ,and memory used is {memory_used}MB')
+    print(f'The time used of the Algorithm optimized is {used_time} seconds ,and memory used is {memory_usage}MB')
+
+
+def performance_optimized_chart(stocks, max_investment, decimal):
+    execution_times = []
+    num_stocks = []
+    memory_usages = []
+
+    for i in range(1, len(stocks) + 1, 100):
+        stock = stocks[:i]
+        start_time = time.time()
+        find_best_portfolio_dynamic_programme(stock, max_investment, decimal)
+        end_time = time.time()
+        execution_time = end_time - start_time
+        execution_times.append(execution_time)
+        process = psutil.Process()
+        memory_usage = process.memory_info().rss / 1024 / 1024
+        memory_usages.append(memory_usage)
+        num_stocks.append(i)
+
+    chart.plot(num_stocks, execution_times)
+    chart.title('Dynamic programme Algorithm Performance')
+    chart.xlabel('Number of Stocks')
+    chart.ylabel('Execution Time')
+    chart.show()
+
+    chart.plot(num_stocks, memory_usages)
+    chart.title('Dynamic programme Algorithm Performance')
+    chart.xlabel('Number of Stocks')
+    chart.ylabel('Memory Usage (MB)')
+    chart.show()
