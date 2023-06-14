@@ -1,5 +1,4 @@
 # Solve problems using algorithms
-[![logo_of_chess_program](https://github.com/xrobotzyh/OC_PROJET4/blob/master/resources/chess.jpg "logo_of_chess_program")](https://github.com/xrobotzyh/OC_PROJET4/blob/master/resources/chess.jpg "logo_of_chess_program")
 
 ## Introduction
 A client needs a program to determine the stocks to buy in order to maximize the clients' profits over a two-year period, while respecting the following constraints:
